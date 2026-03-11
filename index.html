@@ -372,6 +372,74 @@
       color: var(--text-light);
     }
 
+    /* ---- CYCLE DIAGRAM ---- */
+    .cycle-diagram {
+      margin: 40px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .cycle-entry {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .cycle-ring {
+      position: relative;
+      width: 380px;
+      height: 280px;
+    }
+
+    .cycle-ring .visual-flow-item {
+      position: absolute;
+      min-width: 120px;
+      width: 120px;
+      padding: 18px 16px;
+    }
+
+    .cycle-ring .cycle-node-plan { top: 0; left: 50%; transform: translateX(-50%); }
+    .cycle-ring .cycle-node-review { bottom: 0; left: 0; }
+    .cycle-ring .cycle-node-build { bottom: 0; right: 0; }
+
+    .cycle-ring svg.cycle-arrows {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .cycle-arrows path, .cycle-arrows line {
+      stroke: var(--border);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .cycle-arrows polygon {
+      fill: var(--text-light);
+    }
+
+    .cycle-arrows .loop-back {
+      stroke: var(--accent);
+      stroke-width: 2;
+      stroke-dasharray: 6 4;
+      fill: none;
+    }
+
+    .cycle-arrows .loop-back-head {
+      fill: var(--accent);
+    }
+
+    @media (max-width: 640px) {
+      .cycle-entry { flex-direction: column; }
+      .cycle-ring { width: 300px; height: 240px; }
+      .cycle-ring .visual-flow-item { min-width: 100px; width: 100px; padding: 14px 12px; }
+    }
+
     /* ---- CHECKLIST ---- */
     .checklist {
       list-style: none;
@@ -492,33 +560,55 @@
   <!-- ================================ -->
   <h2 id="overview">How it works</h2>
 
-  <div class="visual-flow">
-    <div class="visual-flow-item">
-      <div class="icon">📋</div>
-      <div class="label">Requirements</div>
-      <div class="sublabel">Markdown / Google Doc</div>
+  <div class="cycle-diagram">
+    <div class="cycle-entry">
+      <div class="visual-flow-item">
+        <div class="icon">📋</div>
+        <div class="label">Requirements</div>
+        <div class="sublabel">Markdown / Google Doc</div>
+      </div>
+      <div class="visual-flow-arrow">&rarr;</div>
     </div>
-    <div class="visual-flow-arrow">&rarr;</div>
-    <div class="visual-flow-item">
-      <div class="icon">🔍</div>
-      <div class="label">Review &amp; Plan</div>
-      <div class="sublabel">Agents analyze</div>
-    </div>
-    <div class="visual-flow-arrow">&rarr;</div>
-    <div class="visual-flow-item">
-      <div class="icon">👀</div>
-      <div class="label">You Review</div>
-      <div class="sublabel">Approve the plan</div>
-    </div>
-    <div class="visual-flow-arrow">&rarr;</div>
-    <div class="visual-flow-item">
-      <div class="icon">🚀</div>
-      <div class="label">Build</div>
-      <div class="sublabel">Agents implement</div>
+
+    <div class="cycle-ring">
+      <svg class="cycle-arrows" viewBox="0 0 380 280" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--text-light)" />
+          </marker>
+          <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--accent)" />
+          </marker>
+        </defs>
+        <!-- Plan → Build (right arc) -->
+        <path d="M 245,72 C 320,105 340,175 305,218" marker-end="url(#arrow)" />
+        <!-- Build → Review (bottom) -->
+        <path d="M 235,260 C 200,282 175,282 145,260" marker-end="url(#arrow)" />
+        <!-- Review → Plan (left arc) -->
+        <path d="M 75,218 C 40,175 60,105 135,72" marker-end="url(#arrow)" />
+        <!-- Loop-back: dashed line back up to entry point -->
+        <path class="loop-back" d="M 320,225 C 370,150 350,30 200,5" marker-end="url(#arrow-accent)" />
+      </svg>
+
+      <div class="visual-flow-item cycle-node-plan">
+        <div class="icon">🔍</div>
+        <div class="label">Plan</div>
+        <div class="sublabel">Agents analyze</div>
+      </div>
+      <div class="visual-flow-item cycle-node-review">
+        <div class="icon">👀</div>
+        <div class="label">You Review</div>
+        <div class="sublabel">Approve the plan</div>
+      </div>
+      <div class="visual-flow-item cycle-node-build">
+        <div class="icon">🚀</div>
+        <div class="label">Build</div>
+        <div class="sublabel">Agents implement</div>
+      </div>
     </div>
   </div>
 
-  <p>The workflow has three phases. First, you give Claude a requirements document and ask it to <strong>review and plan</strong> — it will break the work into tasks and produce a plan file. Second, you <strong>read and approve</strong> the plan, making changes as needed. Third, you tell Claude to <strong>implement the plan</strong>, and it dispatches a team of subagents to build in parallel.</p>
+  <p>The workflow is a loop. You start with a requirements document. Claude <strong>plans</strong> the work, you <strong>review and approve</strong> the plan, agents <strong>build</strong> it. Then you review the output, update requirements or add new ones, and the cycle repeats — each pass refining the application further.</p>
 
   <p>You're not handing off control. You're directing a team — reviewing their plan before they write a line of code, and staying available to course-correct as they work.</p>
 
