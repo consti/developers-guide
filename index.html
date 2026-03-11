@@ -472,6 +472,7 @@
       <li><a href="#tips">Tips</a></li>
       <li><a href="#commands">Commands</a></li>
       <li><a href="#github">GitHub</a></li>
+      <li><a href="#understanding">Understanding</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
   </div>
@@ -547,6 +548,11 @@
     </div>
 
     <p>The first time you run Claude, it will ask you to log in. Follow the prompts — it opens a browser window.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-label">The CLI is your primary tool</span>
+      Claude Code runs in the terminal — not in an editor plugin. You'll do most of your work here: planning, building, reviewing, committing, and creating PRs. For reading and browsing code, use <strong>Visual Studio Code</strong> or <strong>Cursor</strong> as your editor. Review diffs in GitHub. But the Claude CLI is where the action happens.
+    </div>
   </div>
 
   <!-- Step 2 -->
@@ -1037,6 +1043,74 @@ your review comments on the PR."</span></code>
 
     <p>Claude will read the diff, analyze the changes, and post review comments directly on the PR via <code>gh</code>.</p>
   </div>
+
+  <!-- ================================ -->
+  <!-- UNDERSTANDING CODE -->
+  <!-- ================================ -->
+  <h2 id="understanding">Understanding code you didn't write</h2>
+
+  <p>When agents build code for you, there's a real risk of "cognitive debt" — the code works, but you don't fully understand <em>how</em> it works. This makes it hard to debug, extend, or make architectural decisions later. Two techniques help.</p>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Linear walkthroughs</h3>
+    </div>
+    <p>After agents finish a feature, ask Claude to walk you through the code methodically — file by file, function by function. Not a summary, but a structured reading of the actual code:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Walk me through the authentication flow end to end.
+Start from the login page, follow the code through
+the API route, the Supabase call, the session handling,
+and back to the redirect. Read each file and explain
+what it does and why."</span></code>
+    </div>
+
+    <p>The key is that Claude reads the actual source files as it explains — it's not working from memory or guessing. This grounds the walkthrough in reality and prevents hallucinated explanations. You end up understanding the code as if you'd written it yourself.</p>
+
+    <p>This is especially valuable when onboarding onto an existing codebase, revisiting code you haven't touched in weeks, or reviewing code that agents wrote with patterns you're not familiar with.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Credit</span>
+      This pattern is from Simon Willison's <a href="https://simonwillison.net/guides/agentic-engineering-patterns/linear-walkthroughs/" target="_blank" rel="noopener" style="color: inherit; font-weight: 600;">agentic engineering patterns</a> — worth reading in full.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Interactive explanations</h3>
+    </div>
+    <p>When a piece of code involves a complex algorithm or non-obvious logic, don't just read the explanation — have Claude build a visual demonstrator:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"The spiral placement algorithm in layout.ts is hard to
+follow. Build me a standalone HTML page that animates how
+it works — step through each iteration, show where it
+tests positions, and visualize the final result. Add a
+speed slider and a step-by-step mode."</span></code>
+    </div>
+
+    <p>Claude will build an interactive HTML page you can open in your browser. Instead of reading a paragraph about how something works, you <em>watch it work</em>. This is especially powerful for layout algorithms, state machines, data transformations, and anything spatial or sequential.</p>
+
+    <p>The effort is minimal — it takes Claude a minute to build — but the understanding you gain is deep and lasting.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Credit</span>
+      Also from Simon Willison's <a href="https://simonwillison.net/guides/agentic-engineering-patterns/interactive-explanations/" target="_blank" rel="noopener" style="color: inherit; font-weight: 600;">agentic engineering patterns</a>.
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SHARE -->
+  <!-- ================================ -->
+  <h2 id="share">Share what you learn</h2>
+
+  <p>This space is moving fast. New techniques, new patterns, new capabilities — what works today might have a better approach tomorrow. The best way for all of us to get better is to <strong>try things and share what works</strong>.</p>
+
+  <p>Found a prompting pattern that produces great results? Hit a wall and figured out a workaround? Discovered a workflow that saves hours? <a href="https://oozou.slack.com/archives/C3RRT6LCR" target="_blank" rel="noopener" style="font-weight: 600;">Share it on Slack</a>. The learning curve is steep and exciting — we climb it faster together.</p>
 
   <!-- ================================ -->
   <!-- FAQ -->
