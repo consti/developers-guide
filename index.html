@@ -1092,6 +1092,28 @@ missing input validation, and auth bypasses."</span></code>
     </div>
   </div>
 
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">⎋</span>
+      <h3><kbd>Esc</kbd> <kbd>Esc</kbd> — Rewind conversation and code</h3>
+    </div>
+    <p>Press <kbd>Esc</kbd> twice to open the rewind menu. You'll see a list of every prompt you've sent — pick the point you want to rewind to, and choose what to restore:</p>
+
+    <ul class="checklist">
+      <li><strong>Restore code and conversation</strong> — revert both to that point (most common)</li>
+      <li><strong>Restore conversation only</strong> — rewind the chat but keep current code</li>
+      <li><strong>Restore code only</strong> — revert files but keep the conversation history</li>
+      <li><strong>Summarize from here</strong> — compress everything after that point into a summary to free context window space</li>
+    </ul>
+
+    <p>This is your undo button. If an agent took the wrong approach, introduced a regression, or you want to try a different implementation strategy — rewind and try again. The code goes back to exactly how it was at that checkpoint.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-label">What gets tracked</span>
+      File changes made through Claude's editing tools are tracked and can be reverted. Changes made by bash commands (e.g. <code>rm</code>, <code>mv</code>) or in other terminal sessions are not tracked. You can also type <code>/rewind</code> instead of pressing Esc twice.
+    </div>
+  </div>
+
   <!-- ================================ -->
   <!-- GITHUB WORKFLOW -->
   <!-- ================================ -->
