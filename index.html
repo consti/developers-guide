@@ -468,6 +468,7 @@
       <li><a href="#overview">Overview</a></li>
       <li><a href="#setup">Setup</a></li>
       <li><a href="#workflow">Workflow</a></li>
+      <li><a href="#parallel">Parallel Work</a></li>
       <li><a href="#tech-stack">Tech Stack</a></li>
       <li><a href="#tips">Tips</a></li>
       <li><a href="#commands">Commands</a></li>
@@ -674,7 +675,9 @@ Tech stack:
       <span class="step-number">6</span>
       <h3>Send the agents to build</h3>
     </div>
-    <p>Once you're happy with the plan, tell Claude to implement it. Claude will dispatch subagents to work on tasks in parallel:</p>
+    <p>Once you're happy with the plan, tell Claude to implement it. You have two options for parallel work: <strong>subagents</strong> (simpler) and <strong>agent teams</strong> (more powerful). See the <a href="#parallel">parallel work section</a> below for a full comparison.</p>
+
+    <p><strong>Option A: Subagents</strong> — quick and simple. Claude spawns helper agents within your session. They do their work and report results back. Good for most tasks:</p>
 
     <div class="code-block">
       <span class="code-label">You &rarr; Claude</span>
@@ -685,7 +688,19 @@ Create a git commit after each major milestone.
 Make sure the README.md has clear setup instructions.</code>
     </div>
 
-    <p>Claude will orchestrate multiple agents — one might scaffold the project while another sets up the database schema, while a third builds the authentication flow. You'll see progress updates as each agent completes its work.</p>
+    <p><strong>Option B: Agent teams</strong> — teammates are independent Claude sessions that can talk to each other, claim tasks from a shared list, and coordinate. Better for large features where agents need to collaborate:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code>I've reviewed PLAN.md and it looks good. Create an agent
+team to implement it. Spawn teammates for:
+- Database schema and migrations
+- API routes and server actions
+- Frontend components and pages
+
+Have them coordinate through the shared task list.
+Require plan approval before implementation.</code>
+    </div>
 
     <div class="callout callout-success">
       <span class="callout-label">Stay available</span>
@@ -718,6 +733,90 @@ Also, the sidebar should collapse on mobile. Fix both.</code>
     <div class="breather-emoji">&#9889;</div>
     <h3 class="breather-title">That's the core workflow.</h3>
     <p class="breather-text">Requirements in, plan reviewed, code out. Everything below is about making better decisions on tech stack, prompting, and getting the most out of your agent team.</p>
+  </div>
+
+  <!-- ================================ -->
+  <!-- PARALLEL WORK -->
+  <!-- ================================ -->
+  <h2 id="parallel">Subagents vs. agent teams</h2>
+
+  <p>Claude has two mechanisms for parallel work. Understanding when to use which one saves time and tokens.</p>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Subagents: quick, focused workers</h3>
+    </div>
+    <p>Subagents are helper agents that Claude spawns within your session. They do a specific task, report results back, and disappear. They can't talk to each other — only back to the main agent. Lower token cost, no setup required.</p>
+
+    <p><strong>Use subagents when:</strong> tasks are independent, don't need to coordinate, and you just need the results. Most day-to-day work falls here — implementing separate features, running parallel searches, building unrelated components.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Agent teams: collaborative sessions</h3>
+    </div>
+    <p>Agent teams are independent Claude Code sessions that share a task list and can message each other directly. One session acts as team lead, coordinating the work. Each teammate has its own full context window.</p>
+
+    <p><strong>Use agent teams when:</strong> teammates need to share findings, challenge each other's approaches, or coordinate across layers (frontend, backend, tests). Great for research, complex debugging, and large features that span multiple domains.</p>
+
+    <div class="callout callout-warning">
+      <span class="callout-label">Experimental feature</span>
+      Agent teams are experimental and disabled by default. They use significantly more tokens than subagents. Start with subagents for most work — graduate to agent teams when you have tasks that genuinely benefit from inter-agent communication.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Enable and use agent teams</h3>
+    </div>
+    <p>First, enable agent teams in your Claude Code settings:</p>
+
+    <div class="code-block">
+      <span class="code-label">~/.claude/settings.json</span>
+      <code>{
+  <span class="string">"env"</span>: {
+    <span class="string">"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"</span>: <span class="string">"1"</span>
+  }
+}</code>
+    </div>
+
+    <p>Then just ask Claude to create a team in natural language. Describe the task and the roles you want:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Create an agent team to build the checkout feature.
+Spawn three teammates:
+- One for the database schema and API routes
+- One for the frontend components
+- One for the payment integration
+
+Require plan approval before they start implementing."</span></code>
+    </div>
+
+    <p>Claude creates the team, spawns teammates, and coordinates through a shared task list. Use <kbd>Shift+Down</kbd> to cycle through teammates and message them directly.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Agent team tips</h3>
+    </div>
+
+    <ul class="checklist">
+      <li><strong>Start with 3-5 teammates</strong> — more adds coordination overhead without proportional benefit</li>
+      <li><strong>Give each teammate distinct files</strong> — two teammates editing the same file leads to overwrites</li>
+      <li><strong>Require plan approval</strong> for complex or risky work — the lead reviews before teammates implement</li>
+      <li><strong>5-6 tasks per teammate</strong> keeps everyone productive without excessive context switching</li>
+      <li><strong>Start with research tasks</strong> if you're new to teams — reviewing, investigating, or exploring before building</li>
+    </ul>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Split pane mode</span>
+      By default, teammates run in your main terminal. If you want each teammate in its own pane (requires <code>tmux</code> or iTerm2), set <code>"teammateMode": "tmux"</code> in your settings.json.
+    </div>
   </div>
 
   <!-- ================================ -->
