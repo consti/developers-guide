@@ -471,6 +471,7 @@
       <li><a href="#tech-stack">Tech Stack</a></li>
       <li><a href="#tips">Tips</a></li>
       <li><a href="#commands">Commands</a></li>
+      <li><a href="#github">GitHub</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
   </div>
@@ -580,13 +581,28 @@
       <span class="step-number">3</span>
       <h3>Start Claude in your project directory</h3>
     </div>
-    <p>Navigate to your project folder and start Claude:</p>
+    <p>Navigate to your project folder and start Claude. The <code>--dangerously-skip-permissions</code> flag lets Claude run terminal commands without asking you each time — it makes the experience much smoother for development work.</p>
 
     <div class="code-block">
       <span class="code-label">Terminal</span>
       <code><span class="prompt">$ </span><span class="command">cd ~/Projects/my-app</span>
-<span class="prompt">$ </span><span class="command">claude</span></code>
+<span class="prompt">$ </span><span class="command">claude --dangerously-skip-permissions</span></code>
     </div>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Set up aliases to save typing</span>
+      Add these to your <code>~/.zshrc</code> (or <code>~/.bashrc</code>) so you don't have to type the full flag every time:
+    </div>
+
+    <div class="code-block">
+      <span class="code-label">Add to ~/.zshrc</span>
+      <code><span class="comment"># Claude Code shortcuts</span>
+<span class="command">alias cl='claude --dangerously-skip-permissions'</span>
+<span class="command">alias clc='claude --dangerously-skip-permissions --continue'</span>
+<span class="command">alias clr='claude --dangerously-skip-permissions --resume'</span></code>
+    </div>
+
+    <p>Run <code>source ~/.zshrc</code> to activate them. Now you can just type <code>cl</code> to start Claude, <code>clc</code> to continue the last conversation, or <code>clr</code> to pick a previous conversation to resume.</p>
   </div>
 
   <!-- Step 4 -->
@@ -936,6 +952,90 @@ Keep it simple and working."</span></code>
       <h3><code>/btw</code> — Ask a quick side question</h3>
     </div>
     <p>Need a quick answer while agents are working? Type <code>/btw</code> followed by your question. It answers from existing conversation context, shows up as an overlay, and disappears when you press <kbd>Esc</kbd>. Doesn't interrupt the main task or add to history.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">/</span>
+      <h3><code>/review</code> — Security and code review</h3>
+    </div>
+    <p>Run a security-focused review of your codebase or recent changes. Claude will check for common vulnerabilities (SQL injection, XSS, hardcoded secrets, missing auth checks) and flag anything suspicious. Good habit before opening a PR:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Review the changes in this branch for security issues,
+bugs, and code quality. Check for hardcoded secrets,
+missing input validation, and auth bypasses."</span></code>
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- GITHUB WORKFLOW -->
+  <!-- ================================ -->
+  <h2 id="github">GitHub workflow</h2>
+
+  <p>Claude has full access to the <code>gh</code> CLI, which means it can create pull requests, read PR comments, and act on review feedback — all without you leaving the terminal.</p>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Create pull requests automatically</h3>
+    </div>
+    <p>After Claude finishes building a feature, tell it to open a PR:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Create a pull request for this branch. Write a clear
+description summarizing what was built and how to test it."</span></code>
+    </div>
+
+    <p>Claude will push the branch, create the PR with a title and description, and give you the link. It writes proper PR descriptions because it has full context of what it just built.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Fix PR review comments automatically</h3>
+    </div>
+    <p>After your team reviews the PR, you can have Claude pull in the feedback and fix everything in one go:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Read the review comments on PR #42 and fix all the
+requested changes. Push the fixes to the same branch."</span></code>
+    </div>
+
+    <p>Claude will use <code>gh</code> to fetch the PR comments, understand what each reviewer is asking for, make the changes, commit, and push. You can also be more specific:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Read the comments on PR #42. Fix the ones about
+missing error handling and the TypeScript types.
+Ignore the suggestion about renaming the component —
+I disagree with that one."</span></code>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Make sure gh is authenticated</span>
+      Run <code>gh auth status</code> to check. If not authenticated, run <code>gh auth login</code> and follow the prompts. Claude needs this to read and create PRs.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Review someone else's PR</h3>
+    </div>
+    <p>You can also point Claude at a PR you need to review:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Review PR #38. Check for bugs, security issues, and
+whether it follows our project conventions. Leave
+your review comments on the PR."</span></code>
+    </div>
+
+    <p>Claude will read the diff, analyze the changes, and post review comments directly on the PR via <code>gh</code>.</p>
   </div>
 
   <!-- ================================ -->
