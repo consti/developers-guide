@@ -349,27 +349,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 20px;
+      gap: 12px;
       margin: 40px 0;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
     }
 
     .visual-flow-item {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 24px 28px;
+      padding: 18px 14px;
       text-align: center;
-      min-width: 140px;
+      min-width: 0;
+      flex: 1;
     }
 
-    .visual-flow-item .icon { font-size: 28px; margin-bottom: 8px; }
-    .visual-flow-item .label { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
-    .visual-flow-item .sublabel { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    .visual-flow-item .icon { font-size: 24px; margin-bottom: 6px; }
+    .visual-flow-item .label { font-size: 13px; font-weight: 700; letter-spacing: -0.01em; }
+    .visual-flow-item .sublabel { font-size: 11px; color: var(--text-light); margin-top: 2px; }
 
     .visual-flow-arrow {
-      font-size: 20px;
+      font-size: 16px;
       color: var(--text-light);
+      flex-shrink: 0;
     }
 
     /* ---- CYCLE FLOW ---- */
@@ -485,7 +487,8 @@
       .content { padding: 0 24px 80px; }
       nav .nav-inner { padding: 14px 24px; }
       nav .nav-links { display: none; }
-      .visual-flow { flex-direction: column; }
+      .visual-flow { flex-direction: column; flex-wrap: wrap; }
+      .visual-flow-item { flex: unset; min-width: 140px; }
       .visual-flow-arrow { transform: rotate(90deg); }
       .step-number { font-size: 36px; }
     }
