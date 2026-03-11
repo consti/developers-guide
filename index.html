@@ -533,6 +533,24 @@
   <div class="step" data-step="1">
     <div class="step-header">
       <span class="step-number">1</span>
+      <h3>Get a proper terminal</h3>
+    </div>
+    <p>You'll spend most of your time in the terminal, so pick a good one. The built-in macOS Terminal app works, but these are significantly better:</p>
+
+    <p><strong><a href="https://ghostty.org" target="_blank" rel="noopener">Ghostty</a></strong> — fast, native, and minimal. Great default choice. Handles long Claude output smoothly and doesn't get in your way.</p>
+
+    <p><strong><a href="https://iterm2.com" target="_blank" rel="noopener">iTerm2</a></strong> — the classic power-user terminal for macOS. Split panes, search, profiles, and deep tmux integration. If you want to use agent teams in split-pane mode, iTerm2 has first-class support for it.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Why does the terminal matter?</span>
+      Claude Code produces a lot of output — code diffs, agent progress, build logs. A good terminal handles this without lagging, lets you scroll back comfortably, and supports features like split panes when you're running agent teams. The default macOS Terminal tends to struggle with long sessions.
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step" data-step="2">
+    <div class="step-header">
+      <span class="step-number">2</span>
       <h3>Install Claude Code</h3>
     </div>
 
@@ -556,10 +574,10 @@
     </div>
   </div>
 
-  <!-- Step 2 -->
-  <div class="step" data-step="2">
+  <!-- Step 3 -->
+  <div class="step" data-step="3">
     <div class="step-header">
-      <span class="step-number">2</span>
+      <span class="step-number">3</span>
       <h3>Prepare your requirements</h3>
     </div>
     <p>Export your requirements document as <strong>Markdown</strong>. If it's in Google Docs, use an add-on like "Docs to Markdown" or just copy-paste the content into a <code>.md</code> file. Save it somewhere accessible — you'll point Claude at it.</p>
@@ -582,10 +600,10 @@
   <!-- ================================ -->
   <h2 id="workflow">The review → plan → build workflow</h2>
 
-  <!-- Step 3 -->
-  <div class="step" data-step="3">
+  <!-- Step 4 -->
+  <div class="step" data-step="4">
     <div class="step-header">
-      <span class="step-number">3</span>
+      <span class="step-number">4</span>
       <h3>Start Claude in your project directory</h3>
     </div>
     <p>Navigate to your project folder and start Claude. The <code>--dangerously-skip-permissions</code> flag lets Claude run terminal commands without asking you each time — it makes the experience much smoother for development work.</p>
@@ -612,10 +630,10 @@
     <p>Run <code>source ~/.zshrc</code> to activate them. Now you can just type <code>cl</code> to start Claude, <code>clc</code> to continue the last conversation, or <code>clr</code> to pick a previous conversation to resume.</p>
   </div>
 
-  <!-- Step 4 -->
-  <div class="step" data-step="4">
+  <!-- Step 5 -->
+  <div class="step" data-step="5">
     <div class="step-header">
-      <span class="step-number">4</span>
+      <span class="step-number">5</span>
       <h3>Ask Claude to review requirements and create a plan</h3>
     </div>
     <p>Point Claude at your requirements file and ask it to analyze and plan. Be explicit about your tech stack preferences:</p>
@@ -645,10 +663,10 @@ Tech stack:
     </div>
   </div>
 
-  <!-- Step 5 -->
-  <div class="step" data-step="5">
+  <!-- Step 6 -->
+  <div class="step" data-step="6">
     <div class="step-header">
-      <span class="step-number">5</span>
+      <span class="step-number">6</span>
       <h3>Review the plan yourself</h3>
     </div>
     <p>This is the most important step. Open <code>PLAN.md</code> in your editor and read it carefully. Look for:</p>
@@ -669,10 +687,10 @@ Tech stack:
     </div>
   </div>
 
-  <!-- Step 6 -->
-  <div class="step" data-step="6">
+  <!-- Step 7 -->
+  <div class="step" data-step="7">
     <div class="step-header">
-      <span class="step-number">6</span>
+      <span class="step-number">7</span>
       <h3>Send the agents to build</h3>
     </div>
     <p>Once you're happy with the plan, tell Claude to implement it. You have two options for parallel work: <strong>subagents</strong> (simpler) and <strong>agent teams</strong> (more powerful). See the <a href="#parallel">parallel work section</a> below for a full comparison.</p>
@@ -708,10 +726,10 @@ Require plan approval before implementation.</code>
     </div>
   </div>
 
-  <!-- Step 7 -->
-  <div class="step" data-step="7">
+  <!-- Step 8 -->
+  <div class="step" data-step="8">
     <div class="step-header">
-      <span class="step-number">7</span>
+      <span class="step-number">8</span>
       <h3>Review the output and iterate</h3>
     </div>
     <p>Once the agents finish, you have a working codebase. Run it locally following the README, test the flows, and iterate:</p>
