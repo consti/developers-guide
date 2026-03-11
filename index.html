@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Requirements to Running Code — A Developer's Guide to Claude Code</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #FAFAFA;
+      --text: #18181B;
+      --text-muted: #64646B;
+      --text-light: #94949B;
+      --accent: #2563EB;
+      --accent-bg: #EFF6FF;
+      --code-bg: #1E1E1E;
+      --code-text: #D4D4D4;
+      --border: #E4E4E7;
+      --card-bg: #FFFFFF;
+      --step-line: #E0E0DC;
+      --warning-bg: #FFFBEB;
+      --warning-border: #F5D060;
+      --warning-text: #7A5D00;
+      --success-bg: #F0FDF4;
+      --success-border: #86EFAC;
+      --success-text: #166534;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 17px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(250, 250, 250, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .nav-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 14px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    nav .nav-title {
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover { color: var(--text); }
+
+    /* ---- HERO ---- */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 160px 40px 100px;
+    }
+
+    .hero-eyebrow {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      font-size: clamp(42px, 5.5vw, 72px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      max-width: 800px;
+      margin-bottom: 28px;
+    }
+
+    .hero p {
+      font-size: 20px;
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.6;
+    }
+
+    /* ---- CONTENT ---- */
+    .content {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 40px 120px;
+    }
+
+    .content h2 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-top: 80px;
+      margin-bottom: 12px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .content h2:first-of-type {
+      margin-top: 0;
+      border-top: none;
+      padding-top: 0;
+    }
+
+    /* ---- ANCHOR LINKS ---- */
+    .anchor-link {
+      color: var(--text-light);
+      text-decoration: none;
+      opacity: 0;
+      font-weight: 400;
+      margin-left: 8px;
+      transition: opacity 0.15s;
+    }
+
+    h2:hover .anchor-link,
+    .step-header:hover .anchor-link {
+      opacity: 1;
+    }
+
+    .anchor-link:hover {
+      color: var(--accent);
+    }
+
+    /* ---- STEP ---- */
+    .step {
+      margin-top: 48px;
+      position: relative;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .step-number {
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--border);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .step h3 {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .step p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .step p strong { color: var(--text); font-weight: 600; }
+
+    /* ---- BREATHER ---- */
+    .breather {
+      text-align: center;
+      margin: 80px 0;
+      padding: 48px 32px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breather-emoji {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .breather-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .breather-text {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 460px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ---- CODE BLOCKS ---- */
+    .code-block {
+      background: var(--code-bg);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .code-block code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #F1F1F1;
+    }
+
+    .code-block .comment { color: #8DB98A; }
+    .code-block .command { color: #FFFFFF; }
+    .code-block .flag { color: #B4DEFF; }
+    .code-block .string { color: #F0C4A8; }
+    .code-block .prompt { color: #8DB98A; user-select: none; }
+
+    .code-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #AAA;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* ---- COPY BUTTON ---- */
+    .code-block-wrapper {
+      position: relative;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #999;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      z-index: 2;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #DDD;
+    }
+
+    .copy-btn.copied {
+      color: #8DB98A;
+      border-color: rgba(141, 185, 138, 0.3);
+    }
+
+    /* Inline code */
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.9em;
+      background: #EEEEEA;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    /* Reset inline styles inside code blocks */
+    .code-block code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      white-space: pre-wrap;
+      display: block;
+    }
+
+    /* ---- CALLOUTS ---- */
+    .callout {
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 20px 0;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .callout-warning {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      color: var(--warning-text);
+    }
+
+    .callout-success {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
+    }
+
+    .callout-info {
+      background: #F0F4FF;
+      border: 1px solid #B8CCFF;
+      color: #1E3A6E;
+    }
+
+    .callout-label {
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* ---- VISUAL EXPLAINER ---- */
+    .visual-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin: 40px 0;
+      flex-wrap: wrap;
+    }
+
+    .visual-flow-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+      text-align: center;
+      min-width: 140px;
+    }
+
+    .visual-flow-item .icon { font-size: 28px; margin-bottom: 8px; }
+    .visual-flow-item .label { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; }
+    .visual-flow-item .sublabel { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+
+    .visual-flow-arrow {
+      font-size: 20px;
+      color: var(--text-light);
+    }
+
+    /* ---- CHECKLIST ---- */
+    .checklist {
+      list-style: none;
+      margin: 16px 0;
+    }
+
+    .checklist li {
+      padding: 10px 0;
+      padding-left: 32px;
+      position: relative;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .checklist li:last-child { border-bottom: none; }
+
+    .checklist li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 14px;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+    }
+
+    /* ---- FAQ ---- */
+    details {
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+    }
+
+    summary {
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    summary::before {
+      content: '+';
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text-light);
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    details[open] summary::before {
+      content: '\2212';
+    }
+
+    details p {
+      margin-top: 12px;
+      padding-left: 36px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 40px 60px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 640px) {
+      .hero { padding: 120px 24px 60px; }
+      .content { padding: 0 24px 80px; }
+      nav .nav-inner { padding: 14px 24px; }
+      nav .nav-links { display: none; }
+      .visual-flow { flex-direction: column; }
+      .visual-flow-arrow { transform: rotate(90deg); }
+      .step-number { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <span class="nav-title">Requirements → Code</span>
+    <ul class="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#setup">Setup</a></li>
+      <li><a href="#workflow">Workflow</a></li>
+      <li><a href="#tech-stack">Tech Stack</a></li>
+      <li><a href="#tips">Tips</a></li>
+      <li><a href="#commands">Commands</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-eyebrow">A guide for developers</div>
+  <h1>From requirements doc to running code with a team of AI agents</h1>
+  <p>Use Claude Code to review requirements, generate an implementation plan, and then send a team of agents to build it. You stay in the driver's seat — the agents do the heavy lifting.</p>
+</header>
+
+<main class="content">
+
+  <!-- ================================ -->
+  <!-- OVERVIEW -->
+  <!-- ================================ -->
+  <h2 id="overview">How it works</h2>
+
+  <div class="visual-flow">
+    <div class="visual-flow-item">
+      <div class="icon">📋</div>
+      <div class="label">Requirements</div>
+      <div class="sublabel">Markdown / Google Doc</div>
+    </div>
+    <div class="visual-flow-arrow">&rarr;</div>
+    <div class="visual-flow-item">
+      <div class="icon">🔍</div>
+      <div class="label">Review &amp; Plan</div>
+      <div class="sublabel">Agents analyze</div>
+    </div>
+    <div class="visual-flow-arrow">&rarr;</div>
+    <div class="visual-flow-item">
+      <div class="icon">👀</div>
+      <div class="label">You Review</div>
+      <div class="sublabel">Approve the plan</div>
+    </div>
+    <div class="visual-flow-arrow">&rarr;</div>
+    <div class="visual-flow-item">
+      <div class="icon">🚀</div>
+      <div class="label">Build</div>
+      <div class="sublabel">Agents implement</div>
+    </div>
+  </div>
+
+  <p>The workflow has three phases. First, you give Claude a requirements document and ask it to <strong>review and plan</strong> — it will break the work into tasks and produce a plan file. Second, you <strong>read and approve</strong> the plan, making changes as needed. Third, you tell Claude to <strong>implement the plan</strong>, and it dispatches a team of subagents to build in parallel.</p>
+
+  <p>You're not handing off control. You're directing a team — reviewing their plan before they write a line of code, and staying available to course-correct as they work.</p>
+
+  <!-- ================================ -->
+  <!-- SETUP -->
+  <!-- ================================ -->
+  <h2 id="setup">Setup</h2>
+
+  <p>If you already have Claude Code installed and working, skip to the <a href="#workflow">workflow section</a>.</p>
+
+  <!-- Step 1 -->
+  <div class="step" data-step="1">
+    <div class="step-header">
+      <span class="step-number">1</span>
+      <h3>Install Claude Code</h3>
+    </div>
+
+    <div class="code-block">
+      <span class="code-label">Terminal</span>
+      <code><span class="prompt">$ </span><span class="command">curl -fsSL https://claude.ai/install.sh | bash</span></code>
+    </div>
+
+    <p>Verify it works:</p>
+
+    <div class="code-block">
+      <span class="code-label">Terminal</span>
+      <code><span class="prompt">$ </span><span class="command">claude --version</span></code>
+    </div>
+
+    <p>The first time you run Claude, it will ask you to log in. Follow the prompts — it opens a browser window.</p>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step" data-step="2">
+    <div class="step-header">
+      <span class="step-number">2</span>
+      <h3>Prepare your requirements</h3>
+    </div>
+    <p>Export your requirements document as <strong>Markdown</strong>. If it's in Google Docs, use an add-on like "Docs to Markdown" or just copy-paste the content into a <code>.md</code> file. Save it somewhere accessible — you'll point Claude at it.</p>
+
+    <div class="code-block">
+      <span class="code-label">Example file structure</span>
+      <code><span class="comment"># Your project folder</span>
+~/Projects/my-app/
+  requirements.md     <span class="comment"># The requirements doc</span></code>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-label">What makes a good requirements doc?</span>
+      Clear user stories, acceptance criteria, and a list of screens or features. It doesn't need to be perfect — Claude will ask clarifying questions. But the more specific you are about what you want, the better the plan will be.
+    </div>
+  </div>
+
+  <!-- ================================ -->
+  <!-- WORKFLOW -->
+  <!-- ================================ -->
+  <h2 id="workflow">The review → plan → build workflow</h2>
+
+  <!-- Step 3 -->
+  <div class="step" data-step="3">
+    <div class="step-header">
+      <span class="step-number">3</span>
+      <h3>Start Claude in your project directory</h3>
+    </div>
+    <p>Navigate to your project folder and start Claude:</p>
+
+    <div class="code-block">
+      <span class="code-label">Terminal</span>
+      <code><span class="prompt">$ </span><span class="command">cd ~/Projects/my-app</span>
+<span class="prompt">$ </span><span class="command">claude</span></code>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="step" data-step="4">
+    <div class="step-header">
+      <span class="step-number">4</span>
+      <h3>Ask Claude to review requirements and create a plan</h3>
+    </div>
+    <p>Point Claude at your requirements file and ask it to analyze and plan. Be explicit about your tech stack preferences:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code>Read requirements.md. Review the requirements thoroughly.
+Ask me any clarifying questions before proceeding.
+
+Then create a detailed implementation plan in PLAN.md that
+breaks the work into concrete tasks. Each task should be
+small enough for one agent to handle independently.
+
+Tech stack:
+- Next.js with TypeScript
+- Tailwind CSS + shadcn/ui for the frontend
+- Supabase for the database and auth
+- Supabase Storage (S3 compatible) for file uploads
+- Include a README.md explaining how to run locally</code>
+    </div>
+
+    <p>Claude will read the requirements, likely ask you a few questions, and then produce a <code>PLAN.md</code> file with a structured breakdown of the work.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Let Claude ask questions first</span>
+      Good plans come from good understanding. Don't rush past Claude's clarifying questions — they usually surface ambiguities you hadn't noticed. Answer them, then let it finalize the plan.
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="step" data-step="5">
+    <div class="step-header">
+      <span class="step-number">5</span>
+      <h3>Review the plan yourself</h3>
+    </div>
+    <p>This is the most important step. Open <code>PLAN.md</code> in your editor and read it carefully. Look for:</p>
+
+    <ul class="checklist">
+      <li>Does the task breakdown make sense? Are tasks appropriately scoped?</li>
+      <li>Are there dependencies between tasks that need ordering?</li>
+      <li>Does it match your understanding of the requirements?</li>
+      <li>Is anything missing or over-engineered?</li>
+      <li>Does the tech stack match what you specified?</li>
+    </ul>
+
+    <p>Edit the plan directly if you want to change things. Add notes, remove tasks, reorder priorities. This is your chance to steer before any code is written.</p>
+
+    <div class="callout callout-warning">
+      <span class="callout-label">Don't skip the review</span>
+      It's tempting to say "looks good, go build it." Resist. Spending 10 minutes reviewing the plan saves hours of rework. The plan is your contract with the agents — make sure it says what you want.
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="step" data-step="6">
+    <div class="step-header">
+      <span class="step-number">6</span>
+      <h3>Send the agents to build</h3>
+    </div>
+    <p>Once you're happy with the plan, tell Claude to implement it. Claude will dispatch subagents to work on tasks in parallel:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code>I've reviewed PLAN.md and it looks good. Implement the plan.
+
+Use subagents to work on independent tasks in parallel.
+Create a git commit after each major milestone.
+Make sure the README.md has clear setup instructions.</code>
+    </div>
+
+    <p>Claude will orchestrate multiple agents — one might scaffold the project while another sets up the database schema, while a third builds the authentication flow. You'll see progress updates as each agent completes its work.</p>
+
+    <div class="callout callout-success">
+      <span class="callout-label">Stay available</span>
+      You don't need to watch every line of output. But stay around — agents may hit decisions that need your input, like "should this be a modal or a separate page?" Quick answers keep the build moving.
+    </div>
+  </div>
+
+  <!-- Step 7 -->
+  <div class="step" data-step="7">
+    <div class="step-header">
+      <span class="step-number">7</span>
+      <h3>Review the output and iterate</h3>
+    </div>
+    <p>Once the agents finish, you have a working codebase. Run it locally following the README, test the flows, and iterate:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code>The login flow works but the dashboard is missing the
+stats cards from section 3.2 of the requirements.
+Also, the sidebar should collapse on mobile. Fix both.</code>
+    </div>
+
+    <p>Keep iterating until it matches your expectations. Each round gets faster because Claude already has full context of the codebase.</p>
+  </div>
+
+  <!-- ================================ -->
+  <!-- BREATHER -->
+  <!-- ================================ -->
+  <div class="breather">
+    <div class="breather-emoji">&#9889;</div>
+    <h3 class="breather-title">That's the core workflow.</h3>
+    <p class="breather-text">Requirements in, plan reviewed, code out. Everything below is about making better decisions on tech stack, prompting, and getting the most out of your agent team.</p>
+  </div>
+
+  <!-- ================================ -->
+  <!-- TECH STACK -->
+  <!-- ================================ -->
+  <h2 id="tech-stack">Choosing your tech stack</h2>
+
+  <p>Tell Claude what to use upfront. Be explicit — if you don't specify, it'll make its own choices (which may not match your preferences). Here's our recommended stack and when to deviate.</p>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Frontend: Tailwind CSS + shadcn/ui</h3>
+    </div>
+    <p>Always specify these. Tailwind gives Claude a consistent utility-class system, and shadcn/ui provides a library of well-built, accessible components that Claude knows inside and out. Include this in your prompt:</p>
+
+    <div class="code-block">
+      <span class="code-label">Add to your prompt</span>
+      <code><span class="string">"Use Tailwind CSS for styling and shadcn/ui for
+UI components. Install shadcn components as needed."</span></code>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Framework: Next.js, Node.js, or something else</h3>
+    </div>
+    <p><strong>Next.js</strong> (with App Router) is the default choice for full-stack web apps — it handles routing, server-side rendering, and API routes in one package. Use it unless you have a reason not to.</p>
+
+    <p><strong>Plain Node.js + Express</strong> is better for pure backend services, APIs, or CLIs where you don't need a frontend framework.</p>
+
+    <p><strong>React (Vite)</strong> works well for SPAs where you want a lighter setup than Next.js and don't need SSR.</p>
+
+    <p>Tell Claude which one you want. If you're unsure, say <em>"use Next.js with App Router and TypeScript"</em> and you'll be in good shape for most projects.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Database: Supabase (or SQLite for prototypes)</h3>
+    </div>
+    <p><strong>Supabase</strong> is our preferred database. It gives you Postgres, authentication, row-level security, and real-time subscriptions out of the box. Tell Claude:</p>
+
+    <div class="code-block">
+      <span class="code-label">Add to your prompt</span>
+      <code><span class="string">"Use Supabase for the database and auth. Use the
+Supabase JS client library. Set up row-level security
+policies for all tables."</span></code>
+    </div>
+
+    <p>For quick prototypes or internal tools where you don't want to set up Supabase, <strong>SQLite</strong> (via better-sqlite3 or Drizzle + LibSQL) is a great zero-config alternative. Everything stays in a single file.</p>
+
+    <div class="callout callout-info">
+      <span class="callout-label">Supabase vs. Firebase vs. building from scratch?</span>
+      Supabase wins for us because it's standard Postgres underneath — no vendor lock-in, easy to migrate, and Claude understands SQL well. Firebase is fine but its data model (NoSQL) can be awkward for relational data. Building auth and storage from scratch is almost never worth it.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>File storage: S3-compatible</h3>
+    </div>
+    <p>For file uploads (images, documents, etc.), use S3-compatible storage. Our preferred options:</p>
+
+    <ul class="checklist">
+      <li><strong>Supabase Storage</strong> — already integrated if you're using Supabase. Easiest path.</li>
+      <li><strong>Hetzner Object Storage</strong> — cheap, EU-based, S3-compatible. Good for larger files.</li>
+      <li><strong>AWS S3</strong> — the original. Use if you're already in the AWS ecosystem.</li>
+    </ul>
+
+    <p>Tell Claude which one to use. The S3 API is the same across all of them, so switching later is straightforward.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>CMS frameworks: build from scratch vs. PayloadCMS</h3>
+    </div>
+    <p>If your project needs a CMS (blog, content management, admin panel), you have two paths:</p>
+
+    <p><strong>Build from scratch with Claude.</strong> For simple CRUD admin panels or content management, Claude can build exactly what you need faster than you'd configure a framework. No learning curve, no fighting the framework's opinions, and you get exactly the features you need — nothing more.</p>
+
+    <p><strong>Use PayloadCMS</strong> (or similar) when you need a full-featured CMS with rich text editing, media management, localization, versioning, and complex content modeling. Prompt Claude like:</p>
+
+    <div class="code-block">
+      <span class="code-label">Add to your prompt</span>
+      <code><span class="string">"Use PayloadCMS for the admin panel and content
+management. Set up collections for [pages, posts, etc.]."</span></code>
+    </div>
+
+    <div class="callout callout-warning">
+      <span class="callout-label">When in doubt, build from scratch</span>
+      With AI-assisted development, the calculus has changed. Frameworks save time when you need 80%+ of their features. If you only need a few CRUD screens and an admin login, building from scratch with Claude is often faster and produces simpler, more maintainable code. You won't spend hours debugging framework-specific issues or working around conventions that don't fit your use case.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Always include a README</h3>
+    </div>
+    <p>Every project should have a <code>README.md</code> that explains how to get it running locally. Tell Claude:</p>
+
+    <div class="code-block">
+      <span class="code-label">Add to your prompt</span>
+      <code><span class="string">"Include a README.md with:
+- Prerequisites (Node version, etc.)
+- How to install dependencies
+- How to set up environment variables
+- How to run the dev server
+- How to run database migrations"</span></code>
+    </div>
+
+    <p>A good README is the difference between a teammate being able to pick up your project in 5 minutes vs. spending an hour guessing at setup steps.</p>
+  </div>
+
+  <!-- ================================ -->
+  <!-- TIPS -->
+  <!-- ================================ -->
+  <h2 id="tips">Tips for working with agent teams</h2>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Use a CLAUDE.md file for persistent instructions</h3>
+    </div>
+    <p>Create a <code>CLAUDE.md</code> file in your project root with conventions Claude should always follow. This gets loaded into every conversation automatically:</p>
+
+    <div class="code-block">
+      <span class="code-label">CLAUDE.md — example</span>
+      <code><span class="comment"># Project conventions</span>
+
+- Use TypeScript strict mode
+- Use Tailwind CSS + shadcn/ui for all UI
+- Use Supabase for database and auth
+- Use Supabase Storage for file uploads
+- All API routes go in src/app/api/
+- Use server actions where possible
+- Write integration tests for critical flows
+- Commit messages: imperative mood, no emoji</code>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Break big projects into phases</h3>
+    </div>
+    <p>Don't try to build everything in one session. Split the work into phases: <em>"Phase 1: Auth + basic layout. Phase 2: Core CRUD features. Phase 3: Search and filtering."</em> Each phase gets its own plan-review-build cycle.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Commit early and often</h3>
+    </div>
+    <p>Tell Claude to commit after each milestone. This gives you checkpoints to roll back to if something goes wrong. A good prompt addition:</p>
+
+    <div class="code-block">
+      <span class="code-label">Add to your prompt</span>
+      <code><span class="string">"Create a git commit after completing each task in
+the plan. Use clear, descriptive commit messages."</span></code>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Review diffs, not just the running app</h3>
+    </div>
+    <p>After agents finish, don't just test the UI — look at the code. Run <code>git diff</code> or use your editor's diff view. Check for hardcoded secrets, unnecessary dependencies, or patterns that don't match your conventions.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Be specific about what you don't want</h3>
+    </div>
+    <p>Claude is eager to help and will sometimes add features you didn't ask for. If you want a minimal implementation, say so explicitly:</p>
+
+    <div class="code-block">
+      <span class="code-label">You &rarr; Claude</span>
+      <code><span class="string">"Build only what's in the plan. No extra features,
+no premature abstractions, no over-engineering.
+Keep it simple and working."</span></code>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">&rarr;</span>
+      <h3>Use /clear between major context switches</h3>
+    </div>
+    <p>If you're shifting from planning to implementation, or from one feature area to another, start a fresh conversation with <code>/clear</code>. Claude will re-read your project files and CLAUDE.md, giving it a clean mental model without leftover context from the previous discussion.</p>
+  </div>
+
+  <!-- ================================ -->
+  <!-- SLASH COMMANDS -->
+  <!-- ================================ -->
+  <h2 id="commands">Useful slash commands</h2>
+
+  <p>Slash commands start with <code>/</code> and control the tool itself — they're not messages to Claude.</p>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">/</span>
+      <h3><code>/status</code> — Check your usage</h3>
+    </div>
+    <p>See how much of your rate limit you've consumed. If you're running lots of agents, you'll burn through tokens fast.</p>
+
+    <div class="callout callout-warning">
+      <span class="callout-label">Hitting rate limits?</span>
+      Agent teams consume tokens quickly. If <code>/status</code> shows you're near your limit, or Claude starts responding slower, <a href="https://oozou.slack.com/archives/C3RRT6LCR" target="_blank" rel="noopener" style="color: inherit; font-weight: 600;">ask for help on Slack</a> — we can sort out your usage or give you a different API key.
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">/</span>
+      <h3><code>/clear</code> — Start a fresh conversation</h3>
+    </div>
+    <p>Reset the conversation while keeping all project files. Useful between phases or when Claude seems confused by stale context.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">/</span>
+      <h3><code>/help</code> — See all available commands</h3>
+    </div>
+    <p>View the full list of slash commands.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-number">/</span>
+      <h3><code>/btw</code> — Ask a quick side question</h3>
+    </div>
+    <p>Need a quick answer while agents are working? Type <code>/btw</code> followed by your question. It answers from existing conversation context, shows up as an overlay, and disappears when you press <kbd>Esc</kbd>. Doesn't interrupt the main task or add to history.</p>
+  </div>
+
+  <!-- ================================ -->
+  <!-- FAQ -->
+  <!-- ================================ -->
+  <h2 id="faq">Common questions</h2>
+
+  <details>
+    <summary>How is this different from Cursor or Copilot?</summary>
+    <p>Cursor and Copilot work at the file level — they help you write code faster in an editor. Claude Code works at the project level — it can scaffold entire applications, run commands, manage dependencies, and dispatch multiple agents to build in parallel. Think of it as a team lead vs. a pair programmer.</p>
+  </details>
+
+  <details>
+    <summary>Can agents work on the same files without conflicts?</summary>
+    <p>Claude orchestrates the agents to minimize conflicts — it assigns independent tasks to different agents and sequences dependent work. Occasionally there may be minor merge issues, but Claude handles resolving them. If you see something off, just point it out.</p>
+  </details>
+
+  <details>
+    <summary>How do I handle environment variables and secrets?</summary>
+    <p>Never put secrets in the codebase. Ask Claude to create a <code>.env.example</code> file with placeholder values and add <code>.env</code> to <code>.gitignore</code>. For Supabase, you'll need <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> at minimum — get these from your Supabase project dashboard.</p>
+  </details>
+
+  <details>
+    <summary>Should I use a CMS framework or build from scratch?</summary>
+    <p>If you need rich text editing, media management, localization, versioning, and complex content workflows — use PayloadCMS or similar. If you need a few admin screens for managing data — build from scratch. With AI-assisted development, simple CRUD is fast to build and simpler to maintain than configuring a framework you'll only use 20% of.</p>
+  </details>
+
+  <details>
+    <summary>What about testing?</summary>
+    <p>For critical business logic (payments, auth, data processing), ask Claude to write tests. For UI and CRUD, manual testing during development is usually sufficient. A good middle ground: <em>"Write integration tests for the checkout flow and the auth flow. Skip unit tests for basic CRUD operations."</em></p>
+  </details>
+
+  <details>
+    <summary>Can I use this for existing projects, not just greenfield?</summary>
+    <p>Yes. Point Claude at your existing codebase and requirements. It will read the existing code, understand the patterns, and propose a plan that works within your existing architecture. Include a CLAUDE.md with your project conventions so it follows your established patterns.</p>
+  </details>
+
+  <details>
+    <summary>What if the agents produce bad code?</summary>
+    <p>Review the plan before implementation — most bad code comes from bad plans. If the code doesn't meet your standards after implementation, tell Claude what's wrong specifically: <em>"This component is too complex — break it into smaller components"</em> or <em>"Don't use any for TypeScript types — use proper interfaces."</em></p>
+  </details>
+
+  <details>
+    <summary>How much does this cost in tokens?</summary>
+    <p>A full plan-review-build cycle for a medium feature (5-10 files) typically costs $2-5 in API tokens. Large builds with many agents can cost more. Use <code>/status</code> to monitor your usage. If you're on a team plan, your API key covers this.</p>
+  </details>
+
+</main>
+
+<footer>
+  <p>Built for developers who want to ship faster. Powered by Claude Code.</p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  // ---- ANCHOR LINKS ----
+  function slugify(text) {
+    return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
+  // Add # links to h2 headings
+  document.querySelectorAll('.content h2[id]').forEach(h2 => {
+    const link = document.createElement('a');
+    link.className = 'anchor-link';
+    link.href = '#' + h2.id;
+    link.textContent = '#';
+    h2.appendChild(link);
+  });
+
+  // Add IDs and # links to all step h3 headings
+  document.querySelectorAll('.step h3').forEach(h3 => {
+    const step = h3.closest('.step');
+    let id;
+    if (step.dataset.step) {
+      id = 'step-' + step.dataset.step;
+    } else {
+      id = slugify(h3.textContent);
+    }
+    step.id = id;
+    const link = document.createElement('a');
+    link.className = 'anchor-link';
+    link.href = '#' + id;
+    link.textContent = '#';
+    h3.appendChild(link);
+  });
+
+  // ---- COPY BUTTONS ----
+  document.querySelectorAll('.code-block').forEach(block => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'code-block-wrapper';
+    block.parentNode.insertBefore(wrapper, block);
+    wrapper.appendChild(block);
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    wrapper.appendChild(btn);
+
+    btn.addEventListener('click', () => {
+      const code = block.querySelector('code');
+      const text = code.innerText
+        .replace(/^\$ /gm, '')
+        .replace(/^#.*$/gm, '')
+        .replace(/\n{2,}/g, '\n')
+        .trim();
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+      });
+    });
+  });
+});
+</script>
+</body>
+</html>
